@@ -34,6 +34,10 @@ body {
   margin: auto;
   align-items: center;
   justify-content: center;
+  grid-gap: 15px;
+}
+.object-cover {
+  object-fit: cover;
 }
 .single-product {
   padding: 10px;
