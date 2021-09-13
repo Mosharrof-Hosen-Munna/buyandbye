@@ -1,3 +1,4 @@
+// load all data from fakestoreapi
 const loadProducts = () => {
   const url = `https://fakestoreapi.com/products`;
   fetch(url)
@@ -8,26 +9,40 @@ loadProducts();
 
 // show all product in UI
 const showProducts = (products) => {
-  console.log(products);
   const allProducts = products.map((pd) => pd);
   for (const product of allProducts) {
     console.log(product);
     const image = product.image;
     const div = document.createElement("div");
     div.classList.add("product");
-    div.innerHTML = `<div class="card">
-      <div>
-    <img class="w-100 object-cover" src='${image}' height="300px"></img>
-      </div>
-      <div class="card-body bg-info text-white">
-      <h5 class="card-title">${product.title}</h5>
-      <p>Category: ${product.category}</p>
-      <h2>Price: $ ${product.price}</h2>
-      <h4>Average Rating: ${product.rating.rate}</h4>
-      <h4>Total Rating: ${product.rating.count}</h4>
-      <button onclick="addToCart(${product.id},${product.price})" id="addToCart-btn" class="buy-now btn btn-success">add to cart</button>
-      <button onclick="showDetails(${product.id})" id="details-btn" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Details</button></div>
-      </div>
+    div.innerHTML = `<div
+                    class="card h-100 border-bottom border-3 border-success border-top-0 border-end-0 border-start-0">
+                    <div>
+                      <img class="w-100 mx-auto" src='${image}' height="300px" width="300px"></img>
+                    </div>
+                    <div class="card-body bg-info text-white">
+                      <h5 class="card-title">${product.title}</h5>
+                      <p>Category: ${product.category}</p>
+                      <h5 class="px-5 py-1 rounded-pill bg-success"><i class="fas fa-users "></i> -
+                        ${product.rating.count}</h5>
+                      <div class="text-warning mb-2">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+
+                        <span class="py-1 px-3 ms-3 text-white bg-danger rounded-pill">${product.rating.rate}</span>
+                      </div>
+                      <hr class="m-0" />
+                      <h2>Price: $ ${product.price}</h2>
+                      <button onclick="addToCart(${product.id},${product.price})" id="addToCart-btn"
+                        class="buy-now btn btn-success">add
+                        to cart</button>
+                      <button onclick="showDetails(${product.id})" id="details-btn" class="btn btn-danger"
+                        data-bs-toggle="modal" data-bs-target="#staticBackdrop">Details</button>
+                    </div>
+                  </div>
       `;
     document.getElementById("all-products").appendChild(div);
   }
@@ -42,6 +57,7 @@ const addToCart = (id, price) => {
   updateTotal();
 };
 
+// create a function for get input value
 const getInputValue = (id) => {
   const element = document.getElementById(id).innerText;
   const converted = parseFloat(element);
@@ -58,8 +74,12 @@ const updatePrice = (id, value) => {
 };
 
 // set innerText function
-const setInnerText = (id, value) => {
-  document.getElementById(id).innerText = Math.round(value);
+const setInnerText = (id, value, isTrue = true) => {
+  if (!isTrue) {
+    document.getElementById(id).innerText = value.toFixed();
+    return;
+  }
+  document.getElementById(id).innerText = value.toFixed(2);
 };
 
 // update delivery charge and total Tax
@@ -92,13 +112,13 @@ updateTotal();
 
 // show detail function
 const showDetails = (id) => {
-  console.log("show details");
   const URL = `https://fakestoreapi.com/products/${id}`;
   fetch(URL)
     .then((res) => res.json())
     .then((data) => displayDetails(data));
 };
 
+// product details
 const displayDetails = ({
   category,
   description,
@@ -132,13 +152,38 @@ const displayDetails = ({
 };
 
 // handle modal alert
+const buyProduct = () => {
+  const alertModal = document.getElementById("alertModal");
+  alertModal.textContent = "";
+  const productQuantity = getInputValue("total-Products");
+  const message = {};
+  // console.log(productQuantity);
+  if (productQuantity > 0) {
+    message.title = "Hurrah!";
+    message.type = "success";
+    alertModal.appendChild(alertHTML(message));
+    clearCart();
+  } else {
+    message.title = "Opps!";
+    message.type = "fail";
+    alertModal.appendChild(alertHTML(message));
+  }
+};
+
+const clearCart = () => {
+  setInnerText("total-Products", 0, false);
+  setInnerText("price", 0, false);
+  setInnerText("delivery-charge", 20, false);
+  setInnerText("total-tax", 0, false);
+  setInnerText("total", 0, false);
+};
 
 const alertHTML = (alertMessage) => {
   const { title, type } = alertMessage;
   const div = document.createElement("div");
-  div.classList.add("modal-dialog");
+  div.classList.add("modal-content");
   div.innerHTML = `
-   <div class="modal-content">
+   
                               <div class="modal-header">
                                    <h5 class="modal-title text-center" id="alertModalLabel">${title}</h5>
                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
@@ -173,7 +218,7 @@ const alertHTML = (alertMessage) => {
                                    
                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Okay</button>
                               </div>
-                         </div>
+                         
   `;
   return div;
 };

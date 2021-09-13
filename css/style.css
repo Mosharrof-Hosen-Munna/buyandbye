@@ -1,6 +1,7 @@
 body {
   overflow-x: hidden;
   font-family: "Montserrat", sans-serif;
+  background-color: #f0f2f5;
 }
 .search-field {
   border: none;
@@ -32,7 +33,6 @@ body {
   text-align: center;
   width: 100%;
   margin: auto;
-  align-items: center;
   justify-content: center;
   grid-gap: 15px;
 }
